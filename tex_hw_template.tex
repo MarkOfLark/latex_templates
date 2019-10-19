@@ -24,10 +24,20 @@
 \usepackage{parskip}
 \usepackage{gensymb}
 \usepackage{siunitx}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage[hidelinks]{hyperref}
 
 %
 % Basic Document Settings
 %
+
+% for figures: caption label is italic, the caption text is bold / italic
+\captionsetup[figure]{labelfont=it,textfont={bf,it}}
+% for subfigures: caption label is bold, the caption text normal.
+% justification is raggedright (i.e. left aligned)
+% singlelinecheck=off means that the justification setting is used even when the caption is only a single line long. 
+% if singlelinecheck=on, then caption is always centered when the caption is only one line.
+\captionsetup[subfigure]{labelfont=bf,textfont=normalfont,justification=raggedright,aboveskip=12pt}
 
 \topmargin=-0.45in
 \evensidemargin=0in
@@ -98,7 +108,7 @@
 
 \newcommand{\hmwkTitle}{Problem Set Title}
 \newcommand{\hmwkDueDate}{Due Date}
-\newcommand{\hmwkClass}{ECE XXX}
+\newcommand{\hmwkClass}{Class Title}
 \newcommand{\hmwkClassTime}{ 4:30 PM} % include a leading space if you choose to use this field (disabled for now)
 \newcommand{\hmwkClassInstructor}{Instructor's Name} % (disabled for now)
 \newcommand{\hmwkAuthorName}{\textbf{Student's Name}}
@@ -141,7 +151,7 @@
 \newcommand{\solution}{\textbf{\large Solution}}
 
 % Probability commands: Expectation, Variance, Covariance, Bias
-\newcommand{\E}[1]{\mathrm{E}\left[#1\right]}
+\newcommand{\E}[1]{\mathrm{E}\left\{#1\right\}}
 \newcommand{\Var}[1]{\mathrm{Var}\left(#1\right)}
 \newcommand{\Cov}[2]{\mathrm{Cov}\left(#1,#2\right)}
 \newcommand{\Bias}{\mathrm{Bias}}
@@ -167,7 +177,23 @@
 \newcommand{\dfd}[2]{#1[n{-}#2]}
 \newcommand{\dfn}[2]{#1[#2]}
 
+% Array processing definitions
+\newcommand{\kz}{k_{z}}
 
+% Shortcuts for inter document references.
+\newcommand{\lref}[1]{Listing \ref{#1} on page \pageref{#1}}
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\fref}[1]{Figure \ref{#1}}
+\newcommand{\tref}[1]{Table \ref{#1}}
+
+% Matrices and Vectors
+\newcommand{\mtx}[1]{\boldsymbol{#1}}
+\newcommand{\mtxc}[1]{\boldsymbol{#1}^{*}}
+\newcommand{\mtxh}[1]{\boldsymbol{#1}^{H}}
+\newcommand{\mtxt}[1]{\boldsymbol{#1}^{T}}
+
+
+% For more options see https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
 \lstset{
   style              = Matlab-editor,
   basicstyle         = \mlttfamily\footnotesize,
@@ -175,8 +201,11 @@
   mlshowsectionrules = true,
 }
 
-% Uncomment this to skip generating figures
+% When there are many figures it can take a long time to generate the document.
+% Uncomment the following line skip generating any figures that are surrounded
+% by '\ifx \skipfigures \defined' ... and '\fi'.
 %\newcommand{\skipfigures}[0]{xxx}
+
 \begin{document}
 
 \maketitle
@@ -205,59 +234,72 @@ Even more introduction
 
 \begin{homeworkProblem}[1.1]
 Example of drawing DSP systems and signals. Uses several \code{tikz} extensions. \\
-See \code{http://www.texample.net/tikz/examples/fir-filter/} for more examples.
+See  \href{http://www.texample.net/tikz/examples/fir-filter/}{\code{http://www.texample.net/tikz/examples/fir-filter/}} for more examples. \fref{fig:multi} has two subfigures: \fref{subfiga} and \fref{subfigb}. Note that there is a line in the .tex file that allows skipping figure generation if you are typing a lot of math and want the document to generate faster. Search for \code{skipfigures} in the .tex file for details.
 
 \begin{figure}[H]
-\ifx \skipfigures \defined % See definition of \skipfigures above for a way to skip figure output
-\begin{center}
-\begin{tikzpicture}[scale=0.7]
-\matrix (m1) [row sep=10mm, column sep=10mm]
-{
-    %--------------------------------------------------------------------
-    \node[dspnodefull,dsp/label=left]  (m00) {$x(t)$};     &
-    \node[dspmixer]                    (m01) {};           &
-    \node[dspnodefull,dsp/label=right] (m02) {$x_{p}(t)$}; \\
-    %--------------------------------------------------------------------
-    \node[coordinate]                  (m10) {};       &
-    \node[dspnodefull,dsp/label=below] (m11) {$p(t)$}; &
-    \node[coordinate]                  (m12) {};       \\
-    %--------------------------------------------------------------------
-};
-\begin{scope}[start chain]
-    \chainin (m00);
-    \chainin (m01) [join=by dspflow];
-\end{scope}
-\begin{scope}[start chain]
-    \chainin (m01);
-    \chainin (m02) [join=by dspflow];
-\end{scope}
-\begin{scope}[start chain]
-    \chainin (m11);
-    \chainin (m01) [join=by dspflow];
-\end{scope}
-
-\end{tikzpicture}
-% This example has two tikzpictures inside one figure so they show up side by side. The use of \qquad gives a little horizontal spacing between them.
-\qquad\qquad\qquad
-\begin{tikzpicture}[scale=0.5]
-\draw[->] (0,0) -- (0,1.5) node [above]
-     {$\displaystyle
-        X\left(j\omega\right)
-     $};
-    \draw[->] (-6,0) -- (6,0) node [right] {$\omega$};
-    \node[anchor=base, fill=white,inner sep=1pt] at (1,1) {1};
-
-    \foreach \pos/\label in {-4/$-4\pi$,-2/$-2\pi$,0/0,2/$2\pi$,4/$4\pi$}
-        \draw (\pos,0) -- (\pos,-0.1) (\pos cm,-5ex) node
-            [anchor=base,fill=white,inner sep=1pt]  {\label};
-
-    \draw (-4,0) -- (-4,1) node [right] {};
-    \draw (-4,1) -- (0,1) node [right] {};
-    \draw (0,1) -- (2,0) node [right] {};
-\end{tikzpicture}
-\end{center}
-\fi
-\end{figure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \ifx \skipfigures \defined % See definition of \skipfigures above for a way to skip figure output
+        \begin{center}
+            \begin{tikzpicture}[scale=1.0]
+            \matrix (m1) [row sep=10mm, column sep=10mm]
+            {
+                %--------------------------------------------------------------------
+                \node[dspnodefull,dsp/label=left]  (m00) {$x(t)$};     &
+                \node[dspmixer]                    (m01) {};           &
+                \node[dspnodefull,dsp/label=right] (m02) {$x_{p}(t)$}; \\
+                %--------------------------------------------------------------------
+                \node[coordinate]                  (m10) {};       &
+                \node[dspnodefull,dsp/label=right] (m11) {$p(t)$}; &
+                \node[coordinate]                  (m12) {};       \\
+                %--------------------------------------------------------------------
+            };
+            \begin{scope}[start chain]
+                \chainin (m00);
+                \chainin (m01) [join=by dspflow];
+            \end{scope}
+            \begin{scope}[start chain]
+                \chainin (m01);
+                \chainin (m02) [join=by dspflow];
+            \end{scope}
+            \begin{scope}[start chain]
+                \chainin (m11);
+                \chainin (m01) [join=by dspflow];
+            \end{scope}
+            
+            \end{tikzpicture}
+        \end{center}
+        \fi
+        \caption{Sampling a Signal}
+        \label{subfiga}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \ifx \skipfigures \defined
+        \begin{center}
+        \begin{tikzpicture}[scale=0.5]
+            \draw[->] (0,0) -- (0,1.5) node [above]
+                 {$\displaystyle
+                    X\left(j\omega\right)
+                 $};
+                \draw[->] (-6,0) -- (6,0) node [right] {$\omega$};
+                \node[anchor=base, fill=white,inner sep=1pt] at (1,1) {1};
+            
+                \foreach \pos/\label in {-4/$-4\pi$,-2/$-2\pi$,0/0,2/$2\pi$,4/$4\pi$}
+                    \draw (\pos,0) -- (\pos,-0.1) (\pos cm,-5ex) node
+                        [anchor=base,fill=white,inner sep=1pt]  {\label};
+            
+                \draw (-4,0) -- (-4,1) node [right] {};
+                \draw (-4,1) -- (0,1) node [right] {};
+                \draw (0,1) -- (2,0) node [right] {};
+            \end{tikzpicture}
+        \end{center}
+        \fi
+        \caption{Some Signal's Spectrum}
+        \label{subfigb}
+    \end{subfigure}
+    \caption{An example of sub figures}
+    \label{fig:multi}
+  \end{figure}
 
 Where $p(t)$ is an impulse train
 \small
@@ -266,12 +308,14 @@ p(t) &= \sum\limits_{n=-\infty}^{+\infty}\delta\left(t-nT\right)
 \end{align}
 \normalsize
 
-Figures can also be included from file.
+Figures can also be included from file as in \fref{fig:fromfile}.
 \begin{figure}[H]
     \ifx \skipfigures \defined
     \centering
     \includegraphics[width=6in]{external_image.png} 
     \fi
+    \caption{Figure From File}
+    \label{fig:fromfile}
 \end{figure}
 
 
@@ -284,8 +328,10 @@ Figures can also be included from file.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
 \begin{homeworkProblem}[1.2]
-    An example of tabular data.
+    An example of tabular data: \tref{tab:arrive}
 
+    \begin{table}[H]
+    \ifx \skipfigures \defined
     \begin{center}
     \begin{tabular}{l r}
     Sensor  & Arrival Time (ms) \\
@@ -296,6 +342,10 @@ Figures can also be included from file.
     3 & 3.75
     \end{tabular}
     \end{center}
+    \fi
+    \caption{Arrival Times}
+    \label{tab:arrive}
+    \end{table}
 
 
 \end{homeworkProblem}
@@ -309,15 +359,15 @@ Figures can also be included from file.
 \begin{homeworkProblem}[1.3]
 
     Can include source code listings using the \code{lstlisting} package. \\
-    \code{https://en.wikibooks.org/wiki/LaTeX/Source\_Code\_Listings}
+    \href{https://en.wikibooks.org/wiki/LaTeX/Source\_Code\_Listings}{\code{https://en.wikibooks.org/wiki/LaTeX/Source\_Code\_Listings}}
 
     The code can be written inline.
     \begin{lstlisting}[language=Python]
-    import numpy as np
-    180.0*np.arccos(0.1)/np.pi
+import numpy as np
+180.0*np.arccos(0.1)/np.pi
     \end{lstlisting}
 
-    Or included from an external file as in \ref{lst:external_example}.
+    Or included from an external file as in \lref{lst:external_example}.
     \lstinputlisting[language=Matlab, caption = {External File}, label=lst:external_example]{./external_file.m}
 
 \end{homeworkProblem}
@@ -389,15 +439,16 @@ Figures can also be included from file.
     Example of how to write a matrix
     \small
     \begin{align}
-        M_{toeplitz} &= \begin{bmatrix}
+        \mtx{M}_{toeplitz} &= \begin{bmatrix}
         m_{0} & m_{-1} & m_{-2} & \cdots & m_{-n} \\
         m_{1} & m_{0} & m_{1} & \cdots & m_{-(n-1)} \\
         m_{2} & m_{1} & m_{0} & \cdots & m_{-(n-2)} \\
         \vdots & \vdots & \vdots & \ddots & \vdots \\
         m_{n} & m_{n-1} & m_{n-2} & \hdots & m_{0}
-    \end{bmatrix}
+    \end{bmatrix} \label{eq:mtx}
     \end{align}
     \normalsize
+    There are macros defined for many vector and matrix notations: $\mtx{a}$, $\mtxc{b}, \mtxt{A}, \mtxh{B}$. Use the base \code{mtx} macro with subscript and superscript for more complicated expressions such as $\mtx{A}_{i}^{-2H}$.
 \end{homeworkProblem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -409,11 +460,21 @@ Figures can also be included from file.
     Probability helpers
     \small
     \begin{align}
-        \E{X} &= \cdots && \text{Expected value using the proper capital E font} \\
+        \E{\frac{X}{Y}} &= \cdots && \text{Expected value using the proper capital E font} \\
         \Var{Z} &= \cdots && \text{Variance} \\
         x &\clsfr{b}{a} y && \text{Custom operator for bayes classifiers}
     \end{align}
     \normalsize
 \end{homeworkProblem}
+
+\section{Inter-Document Reference Helpers}
+There are several macros defined to make consistent references with less redundant typing. For figures use \code{\textbackslash{}fref$\{label\}$} which will make all references to figure look like this - "\fref{fig:multi}". For tables use \code{\textbackslash{}tref$\{label\}$} for references that look like - "\tref{tab:arrive}". For equations use \code{\textbackslash{}eref$\{label\}$} for "\eref{eq:mtx}". And for code or unformatted text listings use \code{\textbackslash{}lref$\{label\}$} to get this - "\lref{lst:external_example}". Note that these generate clickable links.
+
+\section{Using A Bibliography}
+Just create a \code{.bib} file that contains bibtex entries and then reference them using \code{cite}. An example is \code{\textbackslash{}cite\{OpWill\}} which generates "\cite{OpWill}" because there is an entry in the included \code{.bib} file with label "OpWill". If you issue at least one \code{\textbackslash{}cite} command somewhere in your document then a "References" section as can be seen below will be added wherever the \code{\textbackslash{}bibliography} command was issued. You can change the citation style using \code{\textbackslash{}bibliographystyle}. Here I am using Alpha style.
+
+
+\bibliographystyle{alpha}
+\bibliography{tex_hw_bibliography.bib}
 
 \end{document}
